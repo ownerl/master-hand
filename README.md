@@ -4,3 +4,9 @@ Create a web-app that utilizes MediaPipe's pose tracking system to control and n
 
 ## Tech Stack
 
+- JS
+- Python
+- MediaPipe
+- OpenCV
+
+## 
