@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import './MouseCursor.css';
 
-export default function MouseCursor(fingerPosition) {
+export default function MouseCursor(props) {
     const [mousePosition, setMousePosition] = useState({
         x: 0,
         y: 0
     });
-
+    console.log('mousepos: ', mousePosition)
+    console.log('finge pos:', props.fingerPosition.x)
     useEffect(() => {
-        console.log(fingerPosition)
         const mouseMove = (evt) => {
             setMousePosition({
                 x: evt.clientX,
@@ -24,6 +24,6 @@ export default function MouseCursor(fingerPosition) {
     }, []);
 
     return (
-        <div className="cursor" style={{ left: `${fingerPosition.x-15}px`, top: `${fingerPosition.y-15}px` }}></div>
+        <div className="cursor" style={{ left: `${props.fingerPosition.x-15}px`, top: `${props.fingerPosition.y-15}px` }}></div>
     );
 }

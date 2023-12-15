@@ -2,6 +2,7 @@ import * as tf from "@tensorflow/tfjs-core";
 import * as handPostDetection from "@tensorflow-models/hand-pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import MouseCursor from "./MouseCursor";
+import "./TensorFlow.css"
 
 // import * as scatter from "scatter-gl";
 import Webcam from "react-webcam";
@@ -9,8 +10,7 @@ import { useRef, useState, useEffect } from "react";
 
 export default function TFApp() {
     const webcamRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [fingerPosition, setFingerPosition] = useState({ x: 0, y: 0 });
+    const [fingerPosition, setFingerPosition] = useState({});
 
     const model = handPostDetection.SupportedModels.MediaPipeHands;
     const detectorConfig = {
@@ -46,50 +46,34 @@ export default function TFApp() {
             if (typeof hands[0] !== "undefined") {
                 try {
                     const hand_coords = hands[0].keypoints[8];
-                    console.log("finger coors: ", fingerPosition);
+                    // console.log("finger coors: ", fingerPosition);
                     updateFingerPosition(hand_coords);
                 } catch (error) {
                     console.error("Error drawing hand:", error);
                 }
             }
-            // if (typeof hands[0] === "undefined") {
-            //     tf.dispose(image);
-            //     return;
-            // }
 
-            // set canvas dimensions
-            // canvasRef.current.width = videoWidth;
-            // canvasRef.current.height = videoHeight;
-
-            // fuckin works baby!
-            // if (typeof hands[0] !== "undefined") {
-            //     try {
-            //         requestAnimationFrame(() => {
-            //             const hand_coords = hands[0].keypoints[8];
-            //         });
-            //     } catch (error) {
-            //         console.error("Error drawing hand:", error);
-            //     }
-            // }
             tf.dispose(image);
         }
     };
 
     const updateFingerPosition = (hand_coords) => {
-        setFingerPosition(prevState => {
-            // Check if the state actually updates
-            console.log("Updating finger position to: ", hand_coords);
-            return { ...prevState, x: hand_coords.x, y: hand_coords.y };
-        });
+        console.log("Updating finger position to: ", hand_coords);
+        setFingerPosition({ x: hand_coords.x, y: hand_coords.y });
     };
 
     useEffect(() => {
         detector();
     }, []);
 
+    useEffect(() => {
+        console.log('state has changed')
+    }, [fingerPosition])
+
     return (
         <div className="App">
             <MouseCursor fingerPosition={fingerPosition} />
+            {/* <div className="circle"></div> */}
             <header className="App-header">
                 <Webcam
                     ref={webcamRef}
