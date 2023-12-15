@@ -46,11 +46,23 @@ class HandDetector():
                 # printing (idx, landmark)
                 height, width, channels = image.shape
                 channel_x, channel_y = int(landmark.x*width), int(landmark.y*height)
-                print(f'landmark {idx}: x: {channel_x}, y: {channel_y}')
+                # print(f'landmark {idx}: x: {channel_x}, y: {channel_y}')
                 if draw:
                     if idx == draw_index:
                         cv2.circle(image, (channel_x, channel_y), 20, (255, 0, 255), cv2.FILLED)
-                        print('drawing index')
+                        #print('drawing index')
                 landmark_list.append([idx, channel_x, channel_y])
 
         return landmark_list
+
+    def fingers_pinch(self, image):
+        landmark_list = self.find_position(image, draw=False)
+
+        if len(landmark_list) != 0:
+            if landmark_list[8][2] < (landmark_list[4][2] + 100) and landmark_list[8][2] > (landmark_list[4][2] - 100) and landmark_list[8][2] < (landmark_list[12][2] + 100) and landmark_list[8][2] > (landmark_list[12][2] - 100):
+                if landmark_list[8][1] < (landmark_list[4][1] + 100) and landmark_list[8][1] > (landmark_list[4][1] - 100) and landmark_list[8][1] < (landmark_list[12][1] + 100) and landmark_list[8][1] > (landmark_list[12][1] - 100):
+                    # print('fingers in range!')
+                    return True
+            else:
+                pass
+                # print('not in range')

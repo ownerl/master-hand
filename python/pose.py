@@ -2,6 +2,8 @@ import mediapipe as mp
 import numpy as np
 import cv2 
 from hands import HandDetector
+import time 
+import pyautogui as gui
 
 mp_pose = mp.solutions.pose
 mp_hands = mp.solutions.hands
@@ -11,36 +13,57 @@ pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 hands = mp_hands.Hands(max_num_hands=1)
 
 
-
-
-# calculating angles using trig
-def get_angle(a, b, c):
-    a = np.array(a)
-    b = np.array(b)
-    c = np.array(c)
-
-    rad = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
-
-
 # capture = cv2.VideoCapture(0)
 def main():
     cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    cap.set(cv2.CAP_PROP_FPS, 30)
+    cap.set(cv2.CAP_PROP_HW_ACCELERATION, 1)
     detect = HandDetector(max_hands=1)
+    present_time = 0
+    click_down = False
     while cap.isOpened():
         success, image = cap.read()
         if not success:
             print("Ignoring empty camera frame.")
             # If loading a video, use 'break' instead of 'continue'.
             continue   
-        
+        image = cv2.flip(image, 1)
         image = detect.find_hands(image, True)
         landmark_list = detect.find_position(image, draw=False)
-        try:
-            print(landmark_list[8])
-        except:
-            pass
+        # try:
+        #     print(landmark_list[8])
+        # except:
+        #     pass
+        
+        current_time = time.time()
+        fps = 1/(current_time-present_time)
+        present_time = current_time
+        cv2.putText(image, str(int(fps)), (30, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (255, 255, 0), 2)
+
+
+
+
+        if len(landmark_list) != 0:
+            x8, y8 = landmark_list[8][1:]
+            x4, y4 = landmark_list[4][1:]
+            x5, y5 = landmark_list[5][1:]
+
+            pinched = detect.fingers_pinch(image)
+        
+        ## use landmark_list[5] , the base of index finger as mouse cursor origin
+
+            
+            gui.moveTo(x5, y5)
+            if pinched:
+                if click_down == False:
+                    gui.mouseDown()
+                    click_down = True
+                pass
+            elif not pinched:
+                click_down = False
+                gui.mouseUp()
 
 
         # To improve performance, optionally mark the image as not writeable to
@@ -124,6 +147,16 @@ main()
 
 
 
+
+
+
+# # calculating angles using trig
+# def get_angle(a, b, c):
+#     a = np.array(a)
+#     b = np.array(b)
+#     c = np.array(c)
+
+#     rad = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
 
 
 
