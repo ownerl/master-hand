@@ -35,7 +35,9 @@ class HandDetector():
                         mp_drawing.DrawingSpec(color=(50,100,100), thickness=2, circle_radius=4), # points
                         mp_drawing.DrawingSpec(color=(0,0,255), thickness=2), # lines
                     )
-        return image
+            return image
+        else:
+            return None
     
     def find_position(self, image, hand_number=0, draw=True, draw_index=8):
         hands_results = self.hands.process(image)
@@ -54,6 +56,7 @@ class HandDetector():
                 landmark_list.append([idx, channel_x, channel_y])
 
         return landmark_list
+
 
     def fingers_pinch(self, image):
         landmark_list = self.find_position(image, draw=False)

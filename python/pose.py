@@ -4,6 +4,7 @@ import cv2
 from hands import HandDetector
 import time 
 import pyautogui as gui
+from threading import Thread
 
 mp_pose = mp.solutions.pose
 mp_hands = mp.solutions.hands
@@ -12,14 +13,44 @@ mp_drawing_styles = mp.solutions.drawing_styles
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 hands = mp_hands.Hands(max_num_hands=1)
 
+class ThreadedCamera(object):
+    def __init__(self, source = 0):
 
+        self.capture = cv2.VideoCapture(source)
+
+        self.thread = Thread(target = self.update, args = ())
+        self.thread.daemon = True
+        self.thread.start()
+
+        self.status = False
+        self.frame  = None
+
+    def update(self):
+        while True:
+            if self.capture.isOpened():
+                (self.status, self.frame) = self.capture.read()
+
+    def grab_frame(self):
+        if self.status:
+            return self.frame
+        return None  
+if __name__ == '__main__':
+    streamer = ThreadedCamera(0)
+
+    while True:
+        frame = streamer.grab_frame()
+        if frame is not None:
+            cv2.imshow("Context", frame)
+        if cv2.waitKey(5) & 0xFF == 27:
+            break
 # capture = cv2.VideoCapture(0)
 def main():
     cap = cv2.VideoCapture(0)
     # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     cap.set(cv2.CAP_PROP_FPS, 30)
-    cap.set(cv2.CAP_PROP_HW_ACCELERATION, 1)
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 2)
+    
     detect = HandDetector(max_hands=1)
     present_time = 0
     click_down = False
@@ -64,6 +95,28 @@ def main():
             elif not pinched:
                 click_down = False
                 gui.mouseUp()
+
+
+        # Flip the image horizontally for a selfie-view display.
+        cv2.imshow('MediaPipe Holistic', image)
+
+        # 27 is escape key
+        if cv2.waitKey(5) & 0xFF == 27:
+            break
+    cap.release()
+
+    # capture.release()
+    cv2.destroyAllWindows()
+
+# main()
+
+
+
+
+
+
+
+
 
 
         # To improve performance, optionally mark the image as not writeable to
@@ -124,21 +177,6 @@ def main():
         #     mp_pose.POSE_CONNECTIONS,
         #     landmark_drawing_spec=mp_drawing_styles
         #     .get_default_pose_landmarks_style())
-
-        # Flip the image horizontally for a selfie-view display.
-        cv2.imshow('MediaPipe Holistic', image)
-
-        # 27 is escape key
-        if cv2.waitKey(5) & 0xFF == 27:
-            break
-    cap.release()
-
-    # capture.release()
-    cv2.destroyAllWindows()
-
-main()
-
-
 
 
 
