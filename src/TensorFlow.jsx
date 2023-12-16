@@ -15,7 +15,7 @@ export const BallContext = React.createContext(null);
 
 export default function TFApp() {
     const webcamRef = useRef(null);
-    const [ballCoordinates, setBallCoordinates] = useState({ x: 100, y: 100 });
+    const [ballCoordinates, setBallCoordinates] = useState({ x: 400, y: 200 });
     const [fingerPosition, setFingerPosition] = useState({});
     const [cursorColor, setCursorColor] = useState("white");
     const [grabbing, setGrabbing] = useState(false);
@@ -131,7 +131,6 @@ export default function TFApp() {
                         mirrored={true}
                     />
                 </header>
-                <Hoop />
                 <Ball
                     fingerPosition={fingerPosition}
                     grabbing={grabbing}
