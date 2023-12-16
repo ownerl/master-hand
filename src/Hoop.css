@@ -1,0 +1,8 @@
+.hoop {
+    background-color: mediumslateblue;
+    height: 90px;
+    width: 140px;
+    position: fixed;
+    top: 800px;
+    left: 600px;
+}
