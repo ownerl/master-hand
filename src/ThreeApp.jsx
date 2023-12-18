@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-function MyThree() {
+export default function MyThree(props) {
     const refContainer = useRef(null);
     const positiveRotation = useRef(true);
     var scene = new THREE.Scene();
@@ -43,9 +43,9 @@ function MyThree() {
             requestAnimationFrame(animate);
             moveShape(cube);
             if (positiveRotation.current) {
-                cube.rotation.x += 0.01;
+                // cube.rotation.x += 0.01;
             } else {
-                cube.rotation.x -= 0.01;
+                // cube.rotation.x -= 0.01;
             }
             controls.update();
             renderer.render(scene, camera);
@@ -55,6 +55,20 @@ function MyThree() {
     }, []);
 
     function moveShape(cube) {
+        if (props.grabRef.current) {
+            if (props.fingerPosition.current?.x > (200 + window.innerWidth / 2)) {
+                cube.rotation.y += 0.01;
+            }
+            if (props.fingerPosition.current?.x <= (window.innerWidth / 2) - 200) {        
+                cube.rotation.y -= 0.01;
+            }
+            // if (props.fingerPosition.current?.y > (window.innerHeight / 2)) {
+            //     cube.rotation.x += 0.01;
+            // }
+            // if (props.fingerPosition.current?.y <= (window.innerHeight / 2)) {
+            //     cube.rotation.x -= 0.01;
+            // }
+        }
         // if (positionContext.fingerPosition.x) {
         //     try {
         //         console.log(positionContext.fingerPosition.x);
@@ -70,5 +84,3 @@ function MyThree() {
     // console.log('the rotation speed: ' , rotationSpeedRef.current)
     return <div ref={refContainer}></div>;
 }
-
-export default MyThree;

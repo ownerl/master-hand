@@ -11,7 +11,7 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-            <MyThree />
+                <MyThree fingerPosition={handRef} grabRef={grabRef} />
                 <TFApp fingerPosition={handRef} grabRef={grabRef} />
                 Learn React
             </header>

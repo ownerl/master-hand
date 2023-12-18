@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function MouseCursor(props) {
     // console.log("finge pos:", props.fingerPosition.x);
-    const [cursorColor, setCursorColor] = useState("white");
+    const [cursor, setCursor] = useState("/hand.svg");
     const variants = {
         default: {
             x: props.fingerPosition?.x,
@@ -13,9 +13,9 @@ export default function MouseCursor(props) {
     };
     useEffect(() => {
         if (props.grabRef.current === true) {
-            setCursorColor("blue");
+            setCursor("/grab.svg");
         } else {
-            setCursorColor("white");
+            setCursor("/hand.svg");
         }
     }, [props.grabRef.current]);
 
@@ -32,7 +32,12 @@ export default function MouseCursor(props) {
                 style={{
                     //     left: `${props.fingerPosition.x}px`,
                     //     top: `${props.fingerPosition.y}px`,
-                    backgroundColor: `${cursorColor}`,
+                    // backgroundColor: `${cursorColor}`,
+                    backgroundImage: `url(${cursor})`,
+                    backgroundSize: 'cover',
+                    height: '30px',
+                    width: '30px',
+
                 }}
             />
         </>

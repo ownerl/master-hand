@@ -108,8 +108,8 @@ export default function TFApp(props) {
 
     return (
         <div className="App">
-            <MouseCursor fingerPosition={fingerPosition} grabRef={props.grabRef} />
             <Ball fingerPosition={fingerPosition} grabRef={props.grabRef} />
+            <MouseCursor fingerPosition={fingerPosition} grabRef={props.grabRef} />
                 <header className="App-header">
                     <Webcam
                         ref={webcamRef}

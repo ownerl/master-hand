@@ -1,5 +1,6 @@
 .cursor {
-    background-color: white;
+    /* background-color: white; */
+    /* background-image: url('../public/hand.svg'); */
     height: 30px;
     width: 30px;
     border-radius: 50%;
@@ -8,12 +9,3 @@
     left: 0;
 }
 
-.circle {
-    background-color: gray;
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
