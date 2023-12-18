@@ -1,15 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./MouseCursor.css";
 import { motion } from "framer-motion";
 
 export default function MouseCursor(props) {
     // console.log("finge pos:", props.fingerPosition.x);
+    const [cursorColor, setCursorColor] = useState("white");
     const variants = {
         default: {
-            x: props.fingerPosition.x,
-            y: props.fingerPosition.y,
+            x: props.fingerPosition?.x,
+            y: props.fingerPosition?.y,
         },
     };
+    useEffect(() => {
+        if (props.grabRef.current === true) {
+            setCursorColor("blue");
+        } else {
+            setCursorColor("white");
+        }
+    }, [props.grabRef.current]);
 
     return (
         <>
@@ -17,14 +25,14 @@ export default function MouseCursor(props) {
                 className="cursor"
                 variants={variants}
                 animate="default"
-                transition={{ 
+                transition={{
                     ease: "easeOut",
                     duration: 0.1,
                 }}
                 style={{
                     //     left: `${props.fingerPosition.x}px`,
                     //     top: `${props.fingerPosition.y}px`,
-                    backgroundColor: `${props.cursorColor}`,
+                    backgroundColor: `${cursorColor}`,
                 }}
             />
         </>

@@ -3,12 +3,10 @@ import * as THREE from "three";
 import { useContext, useEffect, useRef, useState } from "react";
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { PositionContext } from "./TensorFlow";
 
 function MyThree() {
-    const positionContext = useContext(PositionContext);
     const refContainer = useRef(null);
-    const positiveRotation = useRef(true)
+    const positiveRotation = useRef(true);
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(
         90,
@@ -29,17 +27,17 @@ function MyThree() {
         scene.add(cube);
         const pointLight = new THREE.PointLight(0xffffff);
         pointLight.position.set(0, 0, 0);
-    
+
         const ambientLight = new THREE.AmbientLight(0xffffff);
         const lightHelper = new THREE.PointLightHelper(pointLight);
         scene.add(lightHelper, ambientLight);
-    
+
         const gridHelper = new THREE.GridHelper(200, 50);
-    
+
         scene.add(pointLight, gridHelper);
-    
+
         const controls = new OrbitControls(camera, renderer.domElement);
-    
+
         camera.position.z = 5;
         var animate = function () {
             requestAnimationFrame(animate);
@@ -57,21 +55,19 @@ function MyThree() {
     }, []);
 
     function moveShape(cube) {
-        if (positionContext.fingerPosition.x) {
-            try {
-                console.log(positionContext.fingerPosition.x);
-                if (positionContext.fingerPosition.x < 500) {
-                    positiveRotation.current = true
-                } else {
-                    positiveRotation.current = false
-                }
-            } catch {}
-        }
-        // rotationSpeedRef.current = isNaN(positionContext.fingerPosition.x) ? 0.01 : positionContext.fingerPosition.x/10000 ;
-        // cube.rotation.y += rotationSpeedRef.current
-        // console.log('the rotation speed: ' , rotationSpeedRef.current)
+        // if (positionContext.fingerPosition.x) {
+        //     try {
+        //         console.log(positionContext.fingerPosition.x);
+        //         if (positionContext.fingerPosition.x < 500) {
+        //             positiveRotation.current = true
+        //         } else {
+        //             positiveRotation.current = false
+        //         }
+        //     } catch {}
     }
-
+    // rotationSpeedRef.current = isNaN(positionContext.fingerPosition.x) ? 0.01 : positionContext.fingerPosition.x/10000 ;
+    // cube.rotation.y += rotationSpeedRef.current
+    // console.log('the rotation speed: ' , rotationSpeedRef.current)
     return <div ref={refContainer}></div>;
 }
 

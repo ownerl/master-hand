@@ -1,24 +1,19 @@
 import * as tf from "@tensorflow/tfjs-core";
 import * as handPostDetection from "@tensorflow-models/hand-pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
-import MouseCursor from "./MouseCursor";
-import Ball from "./Ball";
-import Hoop from "./Hoop";
+
 import "./TensorFlow.css";
 import React from "react";
 import Webcam from "react-webcam";
 import { useRef, useState, useEffect } from "react";
-import MyThree from "./ThreeApp";
-export const PositionContext = React.createContext(null);
+import MouseCursor from "./MouseCursor";
+import Ball from "./Ball";
 
 // import * as scatter from "scatter-gl";
 
-export default function TFApp() {
+export default function TFApp(props) {
     const webcamRef = useRef(null);
-    const [ballCoordinates, setBallCoordinates] = useState({ x: 400, y: 200 });
-    const [fingerPosition, setFingerPosition] = useState({});
-    const [cursorColor, setCursorColor] = useState("white");
-    const [grabbing, setGrabbing] = useState(false);
+    const [fingerPosition, setFingerPosition] = useState()
     const model = handPostDetection.SupportedModels.MediaPipeHands;
     const detectorConfig = {
         runtime: "tfjs",
@@ -32,12 +27,13 @@ export default function TFApp() {
             detectorConfig
         );
         const render = async () => {
+            // console.log('grab ref', props.grabRef)
             await detect(handDetector);
             requestAnimationFrame(render);
         };
         render();
     };
-
+    
     const detect = async (handDetector) => {
         if (
             typeof webcamRef.current !== "undefined" &&
@@ -50,54 +46,60 @@ export default function TFApp() {
             // const videoHeight = webcamRef.current.video.videoHeight;
             const image = tf.browser.fromPixels(video);
             const hands = await handDetector.estimateHands(image);
-            if (typeof hands[0] !== "undefined") {
+            if (hands[0]?.keypoints && typeof(props.grabRef?.current) != "undefined") {
+                console.log('inside of if')
                 const keypoint = hands[0].keypoints;
                 try {
-                    const hand_coords = keypoint[9]; // keypoint 9 is the base of the ring finger
+                    const handCoords = keypoint[9]; // keypoint 9 is the base of the ring finger
                     // console.log("finger coors: ", fingerPosition);
-                    updateFingerPosition(hand_coords);
+                    updateFingerPosition(handCoords);
                 } catch (error) {
                     console.error("Error drawing hand:", error);
                 }
-                const clench_fingers = {
-                    x: (keypoint[8].x + keypoint[12].x + keypoint[16].x) / 3,
-                    y: (keypoint[8].y + keypoint[12].y + keypoint[16].y) / 3,
-                };
-                const palm_center = {
-                    x: (keypoint[9].x + keypoint[0].x) / 2,
-                    y: (keypoint[9].y + keypoint[0].y) / 2,
-                };
-                if (
-                    clench_fingers.x < palm_center.x + 40 &&
-                    clench_fingers.x > palm_center.x - 40 &&
-                    clench_fingers.y < palm_center.y + 40 &&
-                    clench_fingers.y > palm_center.y - 40
-                ) {
-                    //console.log("GET GRABBED LOL");
-                    setCursorColor("blue");
-                    setGrabbing(true);
-                    // create grab/click function
-                } else {
-                    setCursorColor("white");
-                    setGrabbing(false);
-                }
+                checkGrab(keypoint)
+                
             }
 
             tf.dispose(image);
         }
     };
 
-    const updateFingerPosition = (hand_coords) => {
-        // console.log("Updating finger position to: ", hand_coords);
-        const mirroredX = webcamRef.current.video.videoWidth - hand_coords.x;
+    const checkGrab = (keypoint) => {
+        const clench_fingers = {
+            x: (keypoint[8].x + keypoint[12].x + keypoint[16].x) / 3,
+            y: (keypoint[8].y + keypoint[12].y + keypoint[16].y) / 3,
+        };
+        const palm_center = {
+            x: (keypoint[9].x + keypoint[0].x) / 2,
+            y: (keypoint[9].y + keypoint[0].y) / 2,
+        };
+        if (
+            clench_fingers.x < palm_center.x + 40 &&
+            clench_fingers.x > palm_center.x - 40 &&
+            clench_fingers.y < palm_center.y + 40 &&
+            clench_fingers.y > palm_center.y - 40
+        ) {
+            //console.log("GET GRABBED LOL");
+            props.grabRef.current = true;
+            // create grab/click function
+        } else {
+            props.grabRef.current = false;
+        }
+    }
+
+    const updateFingerPosition = (handCoords) => {
+        // console.log("Updating finger position to: ", handCoords);
+        const mirroredX = webcamRef.current.video.videoWidth - handCoords.x;
 
         const newWidth =
             (window.innerWidth / webcamRef.current.video.clientWidth) *
             mirroredX;
         const newHeight =
             (window.innerHeight / webcamRef.current.video.clientHeight) *
-            hand_coords.y;
-        setFingerPosition({ x: newWidth, y: newHeight });
+            handCoords.y;
+        // console.log('finger position prop',props.fingerPosition.current)
+        props.fingerPosition.current = { x: newWidth, y: newHeight };
+        setFingerPosition({ x: newWidth, y: newHeight })
     };
 
     useEffect(() => {
@@ -106,16 +108,8 @@ export default function TFApp() {
 
     return (
         <div className="App">
-            <PositionContext.Provider
-                value={{
-                    ballCoordinates: ballCoordinates,
-                    setBallCoordinates: setBallCoordinates,
-                    fingerPosition: fingerPosition,
-                    setFingerPosition: setFingerPosition
-                }}
-            >
-            <MyThree />
-
+            <MouseCursor fingerPosition={fingerPosition} grabRef={props.grabRef} />
+            <Ball fingerPosition={fingerPosition} grabRef={props.grabRef} />
                 <header className="App-header">
                     <Webcam
                         ref={webcamRef}
@@ -135,15 +129,7 @@ export default function TFApp() {
                         mirrored={true}
                     />
                 </header>
-                <Ball
-                    fingerPosition={fingerPosition}
-                    grabbing={grabbing}
-                />
-                <MouseCursor
-                    fingerPosition={fingerPosition}
-                    cursorColor={cursorColor}
-                />
-            </PositionContext.Provider>
+                
         </div>
     );
 }
