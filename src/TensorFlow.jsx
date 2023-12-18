@@ -8,8 +8,8 @@ import "./TensorFlow.css";
 import React from "react";
 import Webcam from "react-webcam";
 import { useRef, useState, useEffect } from "react";
-
-export const BallContext = React.createContext(null);
+import MyThree from "./ThreeApp";
+export const PositionContext = React.createContext(null);
 
 // import * as scatter from "scatter-gl";
 
@@ -106,12 +106,16 @@ export default function TFApp() {
 
     return (
         <div className="App">
-            <BallContext.Provider
+            <PositionContext.Provider
                 value={{
                     ballCoordinates: ballCoordinates,
                     setBallCoordinates: setBallCoordinates,
+                    fingerPosition: fingerPosition,
+                    setFingerPosition: setFingerPosition
                 }}
             >
+            <MyThree />
+
                 <header className="App-header">
                     <Webcam
                         ref={webcamRef}
@@ -139,7 +143,7 @@ export default function TFApp() {
                     fingerPosition={fingerPosition}
                     cursorColor={cursorColor}
                 />
-            </BallContext.Provider>
+            </PositionContext.Provider>
         </div>
     );
 }

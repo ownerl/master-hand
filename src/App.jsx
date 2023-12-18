@@ -1,7 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
 import TFApp from './TensorFlow';
+
 function App() {
+ 
+
   return (
     <div className="App">
       <header className="App-header">
@@ -9,6 +12,7 @@ function App() {
         <TFApp />
           Learn React
       </header>
+      <canvas id="three-bg">hello</canvas>
     </div>
   );
 }
