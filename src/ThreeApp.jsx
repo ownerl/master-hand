@@ -56,31 +56,22 @@ export default function MyThree(props) {
 
     function moveShape(cube) {
         if (props.grabRef.current) {
-            if (props.fingerPosition.current?.x > (200 + window.innerWidth / 2)) {
+            if (props.fingerPosition.current?.x > 200 + window.innerWidth / 2) {
                 cube.rotation.y += 0.01;
             }
-            if (props.fingerPosition.current?.x <= (window.innerWidth / 2) - 200) {        
+            if (
+                props.fingerPosition.current?.x <=
+                window.innerWidth / 2 - 200
+            ) {
                 cube.rotation.y -= 0.01;
             }
-            // if (props.fingerPosition.current?.y > (window.innerHeight / 2)) {
-            //     cube.rotation.x += 0.01;
-            // }
-            // if (props.fingerPosition.current?.y <= (window.innerHeight / 2)) {
-            //     cube.rotation.x -= 0.01;
-            // }
         }
-        // if (positionContext.fingerPosition.x) {
-        //     try {
-        //         console.log(positionContext.fingerPosition.x);
-        //         if (positionContext.fingerPosition.x < 500) {
-        //             positiveRotation.current = true
-        //         } else {
-        //             positiveRotation.current = false
-        //         }
-        //     } catch {}
     }
-    // rotationSpeedRef.current = isNaN(positionContext.fingerPosition.x) ? 0.01 : positionContext.fingerPosition.x/10000 ;
-    // cube.rotation.y += rotationSpeedRef.current
-    // console.log('the rotation speed: ' , rotationSpeedRef.current)
-    return <div ref={refContainer}></div>;
+
+    return (
+        <>
+            <canvas id="three-bg">hello</canvas>
+            <div ref={refContainer}></div>;
+        </>
+    );
 }
