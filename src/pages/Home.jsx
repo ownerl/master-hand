@@ -1,11 +1,12 @@
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import Loader from "../components/Loader";
 import Island from "../models/Island";
 import Sky from "../models/Sky";
-export default function Home() {
+export default function Home(props) {
     const [isRotating, setIsRotating] = useState(false)
-
+    const [handRefState, setHandRefState] = useState(props.fp)
+    // const handyRef = useRef(props.fingerPosition.current)
 
     const adjustIslandForScreenSize =  () => {
         let screenScale = null;
@@ -19,6 +20,10 @@ export default function Home() {
         }
         return [screenScale, screenPosition, rotation]
     }
+
+    useEffect(() => {
+        setHandRefState(props.fp)
+    }, [props.fp])
 
     const [islandScale, islandPosition, rotation] = adjustIslandForScreenSize();
 
@@ -44,6 +49,8 @@ export default function Home() {
                         rotation={rotation}
                         isRotating={isRotating}
                         setIsRotating={setIsRotating}
+                        fingerPosition={handRefState}
+                        grab={props.grab.current}
                     />
                 </Suspense>
             </Canvas>

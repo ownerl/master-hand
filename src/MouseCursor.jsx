@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 export default function MouseCursor(props) {
     // console.log("finge pos:", props.fingerPosition.x);
     const [cursor, setCursor] = useState("/hand.svg");
+    // const [fingerPos, setFingerPos] = useState(props.fingerPosition)
     const variants = {
         default: {
             x: props.fingerPosition?.x,
@@ -37,7 +38,6 @@ export default function MouseCursor(props) {
                     backgroundSize: 'cover',
                     height: '30px',
                     width: '30px',
-
                 }}
             />
         </>

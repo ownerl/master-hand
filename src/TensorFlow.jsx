@@ -13,13 +13,17 @@ import Ball from "./Ball";
 
 export default function TFApp(props) {
     const webcamRef = useRef(null);
-    const [fingerPosition, setFingerPosition] = useState()
+    const [fingerPosition, setFingerPosition] = useState();
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const model = handPostDetection.SupportedModels.MediaPipeHands;
     const detectorConfig = {
         runtime: "tfjs",
         maxHands: 1,
         modelType: "lite",
     };
+
+    const clickDown = new PointerEvent('pointerdown');
+    const clickUp = new PointerEvent('pointerup');
 
     const detector = async () => {
         const handDetector = await handPostDetection.createDetector(
@@ -33,7 +37,7 @@ export default function TFApp(props) {
         };
         render();
     };
-    
+
     const detect = async (handDetector) => {
         if (
             typeof webcamRef.current !== "undefined" &&
@@ -46,8 +50,11 @@ export default function TFApp(props) {
             // const videoHeight = webcamRef.current.video.videoHeight;
             const image = tf.browser.fromPixels(video);
             const hands = await handDetector.estimateHands(image);
-            if (hands[0]?.keypoints && typeof(props.grabRef?.current) != "undefined") {
-                console.log('inside of if')
+            if (
+                hands[0]?.keypoints &&
+                typeof props.grabRef?.current != "undefined"
+            ) {
+                console.log("inside of if");
                 const keypoint = hands[0].keypoints;
                 try {
                     const handCoords = keypoint[9]; // keypoint 9 is the base of the ring finger
@@ -56,8 +63,7 @@ export default function TFApp(props) {
                 } catch (error) {
                     console.error("Error drawing hand:", error);
                 }
-                checkGrab(keypoint)
-                
+                checkGrab(keypoint);
             }
 
             tf.dispose(image);
@@ -85,51 +91,74 @@ export default function TFApp(props) {
         } else {
             props.grabRef.current = false;
         }
-    }
+    };
+
+    useEffect(() => {
+        if (props.grabRef.current) {
+            console.log('clik down')
+            document.body.dispatchEvent(clickDown);
+        } else if (!props.grabRef.current) {
+            console.log('click up')
+            document.body.dispatchEvent(clickUp)
+
+        }
+    }, [props.grabRef.current])
 
     const updateFingerPosition = (handCoords) => {
         // console.log("Updating finger position to: ", handCoords);
         const mirroredX = webcamRef.current.video.videoWidth - handCoords.x;
-
         const newWidth =
             (window.innerWidth / webcamRef.current.video.clientWidth) *
             mirroredX;
+        // console.log("window inner width ", window.innerWidth);
+        // console.log("webcam ref vid: ", webcamRef.current.video.clientHeight);
+        // console.log("update fingers inside: handCoords.x: ", newWidth);
         const newHeight =
             (window.innerHeight / webcamRef.current.video.clientHeight) *
             handCoords.y;
         // console.log('finger position prop',props.fingerPosition.current)
-        props.fingerPosition.current = { x: newWidth, y: newHeight };
-        setFingerPosition({ x: newWidth, y: newHeight })
+        props.setfp({ x: newWidth, y: newHeight })
+        props.fingerPosition.current = { x: newWidth, y: newHeight }
+        setFingerPosition({ x: newWidth, y: newHeight });
     };
+
+    const updateWidth = () => {
+        setScreenWidth(window.innerWidth);
+    };
+
+    useEffect(() => {
+        window.addEventListener("resize", updateWidth);
+        return window.removeEventListener("resize", updateWidth);
+    }, []);
 
     useEffect(() => {
         detector();
     }, []);
 
     return (
-        <div className="App">
+        <div className="Tensor-flow">
             {/* <Ball fingerPosition={fingerPosition} grabRef={props.grabRef} /> */}
-            <MouseCursor fingerPosition={fingerPosition} grabRef={props.grabRef} />
-                <header className="App-header">
-                    <Webcam
-                        ref={webcamRef}
-                        muted={true}
-                        style={{
-                            opacity: 0,
-                            position: "absolute",
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            left: 0,
-                            right: 0,
-                            textAlign: "center",
-                            zindex: 9,
-                            width: 680,
-                            height: 480,
-                        }}
-                        mirrored={true}
-                    />
-                </header>
-                
+            <MouseCursor
+                fingerPosition={fingerPosition}
+                grabRef={props.grabRef}
+            />
+            <Webcam
+                ref={webcamRef}
+                muted={true}
+                style={{
+                    opacity: 0,
+                    position: "absolute",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    left: 0,
+                    right: 0,
+                    textAlign: "center",
+                    width: 680,
+                    height: 480,
+                    zindex: 9,
+                }}
+                mirrored={true}
+            />
         </div>
     );
 }

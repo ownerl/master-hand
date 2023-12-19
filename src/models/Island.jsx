@@ -12,16 +12,71 @@ import { useFrame, useThree } from "@react-three/fiber";
 // import islandScene from "../assets/3d/island.glb";
 import { a } from "@react-spring/three";
 
-const Island = ({ isRotating, setIsRotating, ...props }) => {
+const Island = ({ grab, fingerPosition, isRotating, setIsRotating, ...props }) => {
     const islandRef = useRef();
     const { nodes, materials } = useGLTF("/3d/island.glb");
 
     const { gl, viewport } = useThree();
     const [currentStage, setCurrentStage] = useState(null);
     const lastX = useRef(0);
+    const lastHandX = useRef(0)
     const lastY = useRef(0);
+    const lastDeltaHand = useRef(0)
     const rotationSpeed = useRef(0);
     const dampingFactor = 0.95;
+
+
+    function handGrab() {
+        if (grab && !isRotating) {
+            lastHandX.current = fingerPosition.x;
+            setIsRotating(true)
+        }
+    }
+    // function handDrag() {
+    //     if (isRotating) {
+    //         const deltaHand = Math.round(fingerPosition.x - lastHandX.current) / viewport.width;
+    //         console.log('gonna rotato banana:', deltaHand)
+    //         if (Math.abs(deltaHand) > 0.1) {
+    //             islandRef.current.rotation.y += deltaHand * 0.01 * Math.PI;
+    //             lastHandX.current = fingerPosition.x;
+    //             rotationSpeed.current = deltaHand * 0.01 * Math.PI;
+    //         }
+    //     }
+    // }
+
+
+    function handDrag() {
+        if (isRotating) {
+            const deltaHand = Math.round(fingerPosition.x - lastHandX.current) / viewport.width;
+            const smoothDeltaHand = 0.5 * deltaHand + 0.5 * lastDeltaHand.current;
+            console.log('gonna rotato banana:', smoothDeltaHand)
+            if (Math.abs(smoothDeltaHand) > 0.1) {
+                islandRef.current.rotation.y += smoothDeltaHand * 0.01 * Math.PI;
+                lastHandX.current = fingerPosition.x;
+                rotationSpeed.current = smoothDeltaHand * 0.01 * Math.PI;
+            }
+            lastDeltaHand.current = smoothDeltaHand;
+        }
+    }
+
+    function handUp() {
+        setIsRotating(false)
+    }
+
+    useEffect(() => {
+        if (grab && isRotating) {
+            handDrag();
+        }
+    }, [isRotating, handDrag])
+
+    useEffect(() => {
+        if (grab) {
+            handGrab();
+        } 
+        if (!grab) {
+            handUp();
+        }
+    }, [grab])
 
     const handlePointerDown = (e) => {
         e.stopPropagation();
@@ -43,7 +98,6 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
         if (isRotating) {
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const delta = (clientX - lastX.current) / viewport.width;
-
             islandRef.current.rotation.y += delta * 0.01 * Math.PI;
             lastX.current = clientX;
             rotationSpeed.current = delta * 0.01 * Math.PI;
@@ -77,6 +131,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
             if (Math.abs(rotationSpeed.current) < 0.001) {
                 rotationSpeed.current = 0;
             }
+            islandRef.current.rotation.y += rotationSpeed.current;
         } else {
             const rotation = islandRef.current.rotation.y;
             const normalizedRotation =
