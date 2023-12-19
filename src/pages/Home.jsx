@@ -9,13 +9,13 @@ export default function Home() {
 
     const adjustIslandForScreenSize =  () => {
         let screenScale = null;
-        let screenPosition = [0, -20, -30];
-        let rotation = [0, 4.7, -0.1];
+        let screenPosition = [0, -15, -45];
+        let rotation = [0, 4.7, 0];
         if (window.innerWidth < 768) {
-            screenScale = [0.1, 0.2, 0.2];
+            screenScale = [0.2, 0.2, 0.2];
             screenPosition = [0, -10, -20]
         } else {
-            screenScale = [0.1,0.4,0.4];
+            screenScale = [0.4,0.4,0.4];
         }
         return [screenScale, screenPosition, rotation]
     }
@@ -43,7 +43,7 @@ export default function Home() {
                         scale={islandScale}
                         rotation={rotation}
                         isRotating={isRotating}
-                        setIsRotating={isRotating}
+                        setIsRotating={setIsRotating}
                     />
                 </Suspense>
             </Canvas>
