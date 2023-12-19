@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-spring/three": "^9.6.1",
+    "@react-three/drei": "^9.56.26",
     "@react-three/fiber": "^8.15.12",
     "@tensorflow-models/hand-pose-detection": "^2.0.1",
     "@tensorflow/tfjs": "^4.15.0",

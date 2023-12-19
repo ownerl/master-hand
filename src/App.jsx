@@ -17,7 +17,7 @@ function App() {
             <Route path="/" element={
                 <>
                 <Home />
-                <MyThree fingerPosition={handRef} grabRef={grabRef} />
+                {/* <MyThree fingerPosition={handRef} grabRef={grabRef} /> */}
                 <TFApp fingerPosition={handRef} grabRef={grabRef} />
                 </>
             } />
