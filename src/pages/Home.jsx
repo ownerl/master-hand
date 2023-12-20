@@ -3,6 +3,8 @@ import { Canvas } from "@react-three/fiber";
 import Loader from "../components/Loader";
 import Island from "../models/Island";
 import Sky from "../models/Sky";
+
+
 export default function Home(props) {
     const [isRotating, setIsRotating] = useState(false)
     const [handRefState, setHandRefState] = useState(props.fp)
@@ -42,7 +44,7 @@ export default function Home(props) {
                     {/* <pointLight />
                     <spotLight /> */}
                     <hemisphereLight skyColor="#b1e1ff" groundColor="#000000"/>
-                    <Sky />
+                    
                     <Island 
                         position={islandPosition}
                         scale={islandScale}
