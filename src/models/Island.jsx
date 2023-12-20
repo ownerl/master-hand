@@ -9,12 +9,9 @@ import * as THREE from "three";
 import React, { useState, useRef, useEffect } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
+import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 // import islandScene from "../assets/3d/island.glb";
 import { a } from "@react-spring/three";
-import {
-    CSS2DRenderer,
-    CSS2DObject,
-} from "three/examples/jsm/renderers/CSS2DRenderer";
 
 const Island = ({
     grab,
@@ -39,17 +36,6 @@ const Island = ({
     const smoothDeltaHand = useRef(0);
     const dampingFactor = 0.95;
 
-    const labelRenderer = new CSS2DRenderer();
-
-    if (!document.getElementById("label-renderer")) {
-        labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        labelRenderer.domElement.style.position = "absolute";
-        labelRenderer.domElement.style.top = "0px";
-        labelRenderer.domElement.style.pointerEvents = "none";
-        labelRenderer.domElement.id = "label-renderer";
-        document.body.appendChild(labelRenderer.domElement);
-    }
-
     const scene = useThree(({ scene }) => {
         return scene;
     });
@@ -68,10 +54,10 @@ const Island = ({
 
     useEffect(() => {
         const group = new THREE.Group();
-        const sphereMesh1 = createPointMesh('sphere1', 5, 30, 20);
+        const sphereMesh1 = createPointMesh('sphere1', 10, 10, -20);
         group.add(sphereMesh1);
-        scene.add(group)
-    }, [scene])
+        scene.add(sphereMesh1)
+    }, [scene]);
 
     // console.log('cam: ', cam)
     // console.log('scene: ', scene.children[3])
@@ -91,8 +77,8 @@ const Island = ({
         mouse.x = (fingerPosition?.x / window.innerWidth) * 2 - 1;
         mouse.y = (fingerPosition?.y / window.innerWidth) * 2 - 1;
         // console.log(mouse)
-        hoverSelect();
-        labelRenderer.render(scene, cam);
+        // hoverSelect();
+        // labelRenderer.render(scene, cam);
     }, [fingerPosition]);
 
     function handGrab() {
@@ -113,6 +99,8 @@ const Island = ({
             if (Math.abs(smoothDeltaHand.current) > 0.1) {
                 islandRef.current.rotation.y +=
                     smoothDeltaHand.current * 0.01 * Math.PI;
+                // islandRef.current.rotation.y +=
+                //     smoothDeltaHand.current * 0.01 * Math.PI;
                 lastHandX.current = fingerPosition.x;
                 rotationSpeed.current =
                     smoothDeltaHand.current * 0.01 * Math.PI;
@@ -140,52 +128,52 @@ const Island = ({
         }
     }, [grab]);
 
-    const handlePointerDown = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        setIsRotating(true);
+    // const handlePointerDown = (e) => {
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    //     setIsRotating(true);
 
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        lastX.current = clientX;
-    };
-    const handlePointerUp = (e) => {
-        setIsRotating(false);
-        console.log("pointer up!");
-        e.stopPropagation();
-        e.preventDefault();
-    };
-    const handlePointerDrag = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (isRotating) {
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            delta.current = (clientX - lastX.current) / viewport.width;
-            islandRef.current.rotation.y += delta.current * 0.01 * Math.PI;
-            lastX.current = clientX;
-            rotationSpeed.current = delta.current * 0.01 * Math.PI;
-        }
-    };
-    const handleKeyDown = (e) => {
-        if (e.key === "ArrowLeft" || e.key === "A" || e.key === "a") {
-            if (!isRotating) setIsRotating(true);
-            islandRef.current.rotation.y += 0.01 * Math.PI;
-        } else if (e.key === "ArrowRight" || e.key === "D" || e.key === "d") {
-            if (!isRotating) setIsRotating(true);
-            islandRef.current.rotation.y -= 0.01 * Math.PI;
-        }
-    };
-    const handleKeyUp = (e) => {
-        if (
-            e.key === "ArrowLeft" ||
-            e.key === "ArrowRight" ||
-            e.key === "A" ||
-            e.key === "D" ||
-            e.key === "a" ||
-            e.key === "d"
-        ) {
-            setIsRotating(false);
-        }
-    };
+    //     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    //     lastX.current = clientX;
+    // };
+    // const handlePointerUp = (e) => {
+    //     setIsRotating(false);
+    //     console.log("pointer up!");
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    // };
+    // const handlePointerDrag = (e) => {
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    //     if (isRotating) {
+    //         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    //         delta.current = (clientX - lastX.current) / viewport.width;
+    //         islandRef.current.rotation.y += delta.current * 0.01 * Math.PI;
+    //         lastX.current = clientX;
+    //         rotationSpeed.current = delta.current * 0.01 * Math.PI;
+    //     }
+    // };
+    // const handleKeyDown = (e) => {
+    //     if (e.key === "ArrowLeft" || e.key === "A" || e.key === "a") {
+    //         if (!isRotating) setIsRotating(true);
+    //         islandRef.current.rotation.y += 0.01 * Math.PI;
+    //     } else if (e.key === "ArrowRight" || e.key === "D" || e.key === "d") {
+    //         if (!isRotating) setIsRotating(true);
+    //         islandRef.current.rotation.y -= 0.01 * Math.PI;
+    //     }
+    // };
+    // const handleKeyUp = (e) => {
+    //     if (
+    //         e.key === "ArrowLeft" ||
+    //         e.key === "ArrowRight" ||
+    //         e.key === "A" ||
+    //         e.key === "D" ||
+    //         e.key === "a" ||
+    //         e.key === "d"
+    //     ) {
+    //         setIsRotating(false);
+    //     }
+    // };
 
     useFrame(() => {
         if (!isRotating) {
@@ -219,27 +207,24 @@ const Island = ({
         }
     });
 
-    useEffect(() => {
-        const canvas = gl.domElement;
-        canvas.addEventListener("pointerdown", handlePointerDown);
-        canvas.addEventListener("pointerup", handlePointerUp);
-        canvas.addEventListener("pointermove", handlePointerDrag);
-        window.addEventListener("keydown", handleKeyDown);
-        window.addEventListener("keyup", handleKeyUp);
-        return () => {
-            canvas.removeEventListener("pointerdown", handlePointerDown);
-            canvas.removeEventListener("pointerup", handlePointerUp);
-            canvas.removeEventListener("pointermove", handlePointerDrag);
-            window.removeEventListener("keydown", handleKeyDown);
-            window.removeEventListener("keyup", handleKeyUp);
-        };
-    }, [gl, handlePointerDown, handlePointerDrag, handlePointerDrag]);
+    // useEffect(() => {
+    //     const canvas = gl.domElement;
+    //     canvas.addEventListener("pointerdown", handlePointerDown);
+    //     canvas.addEventListener("pointerup", handlePointerUp);
+    //     canvas.addEventListener("pointermove", handlePointerDrag);
+    //     window.addEventListener("keydown", handleKeyDown);
+    //     window.addEventListener("keyup", handleKeyUp);
+    //     return () => {
+    //         canvas.removeEventListener("pointerdown", handlePointerDown);
+    //         canvas.removeEventListener("pointerup", handlePointerUp);
+    //         canvas.removeEventListener("pointermove", handlePointerDrag);
+    //         window.removeEventListener("keydown", handleKeyDown);
+    //         window.removeEventListener("keyup", handleKeyUp);
+    //     };
+    // }, [gl, handlePointerDown, handlePointerDrag, handlePointerDrag]);
 
     return (
         <>
-        <a.group>
-            
-        </a.group>
             <a.group ref={islandRef} {...props}>
                 <group
                     position={[-36.773, 6.538, 16.547]}
@@ -574,7 +559,7 @@ const Island = ({
                     />
                 </group>
                 //////////////////////////////////////////////////////////////////
-                <group
+                {/* <group
                     position={[29.339, 16.048, -89.902]}
                     rotation={[0, -0.086, 0]}
                 >
@@ -608,7 +593,7 @@ const Island = ({
                         position={[0.188, 12.681, 0.216]}
                         rotation={[0, 0.638, 0]}
                     />
-                </group>
+                </group> */}
                 //////////
                 <group position={[-14.879, -3.715, 61.952]}>
                     <mesh
@@ -1150,11 +1135,13 @@ const Island = ({
                     position={[2.393, 39.328, -16.989]}
                     rotation={[1.372, -1.405, 1.614]}
                 />
+                ////////////////
                 {/* <mesh
                     geometry={nodes.Object_238.geometry}
                     material={materials.water}
                     position={[0, -3.036, 0]}
                 /> */}
+                //////////////
                 <mesh
                     geometry={nodes.Object_240.geometry}
                     material={materials.leaves}
