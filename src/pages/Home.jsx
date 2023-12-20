@@ -4,9 +4,8 @@ import Loader from "../components/Loader";
 import Island from "../models/Island";
 import Sky from "../models/Sky";
 import * as THREE from "three";
-import { OrbitControls } from "@react-three/drei";
+import { CameraControls } from "@react-three/drei";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { useFrame } from "@react-three/fiber/dist/react-three-fiber.cjs";
 
 export default function Home(props) {
     const [isRotating, setIsRotating] = useState(false);
@@ -16,7 +15,6 @@ export default function Home(props) {
     const controlsRef = useRef();
     useEffect(() => {
         if (!initializedRef.current) {
-
             // const labelRenderer = new CSS2DRenderer();
             // if (!document.getElementById("label-renderer")) {
             //     labelRenderer.setSize(
@@ -45,8 +43,6 @@ export default function Home(props) {
         }
         return [screenScale, screenPosition, rotation];
     };
-
-    
 
     useEffect(() => {
         setHandRefState(props.fp);
@@ -82,15 +78,22 @@ export default function Home(props) {
                         grab={props.grab.current}
                         orbitRef={controlsRef}
                     />
-                    <OrbitControls 
+                    <CameraControls
+                        ref={controlsRef}
+                        minDistance={44}
+                        maxDistance={150}
+                        enablePan={false}
+                        minPolarAngle={0}
+                        maxPolarAngle={Math.PI / 2}
+                    />
+                    {/* <OrbitControls 
                         ref={controlsRef}
                         enablePan={false}
                         minPolarAngle={0}
                         maxPolarAngle={Math.PI / 2}
                         minDistance={44}
                         maxDistance={150}
-                    />
-
+                    /> */}
                 </Suspense>
             </Canvas>
         </section>
