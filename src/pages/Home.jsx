@@ -76,15 +76,17 @@ export default function Home(props) {
                         setIsRotating={setIsRotating}
                         fingerPosition={handRefState}
                         grab={props.grab.current}
-                        orbitRef={controlsRef}
+                        controlsRef={controlsRef}
                     />
                     <CameraControls
                         ref={controlsRef}
+                        distance={44}
                         minDistance={44}
                         maxDistance={150}
                         enablePan={false}
                         minPolarAngle={0}
                         maxPolarAngle={Math.PI / 2}
+                        smoothTime={0.125}
                     />
                     {/* <OrbitControls 
                         ref={controlsRef}

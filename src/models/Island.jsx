@@ -17,9 +17,11 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 
 // import islandScene from "../assets/3d/island.glb";
 import { a } from "@react-spring/three";
+import { DEG2RAD } from "three/src/math/MathUtils";
 
 
 const Island = ({
+    controlsRef,
     grab,
     fingerPosition,
     isRotating,
@@ -34,7 +36,7 @@ const Island = ({
     const mouse = new THREE.Vector2();
     const { gl, viewport } = useThree();
     const [currentStage, setCurrentStage] = useState(null);
-    const lastX = useRef(0);
+    const lastY = useRef(0);
     const lastHandX = useRef(0);
     const lastDeltaHand = useRef(0);
     const rotationSpeed = useRef(0);
@@ -73,11 +75,11 @@ const Island = ({
     function hoverSelect() {
         raycaster.setFromCamera(mouse, cam);
         const intersects = raycaster.intersectObject(scene.children[3]);
-        console.log("the intersects: ", intersects);
+        // console.log("the intersects: ", intersects);
         for (let i = 0; i < intersects.length; i++) {
-            console.log("intersecting item: ", intersects[i].object.name);
+            // console.log("intersecting item: ", intersects[i].object.name);
             if (intersects[i].object.name === "abay") {
-                console.log("found the pillar");
+                // console.log("found the pillar");
             }
         }
     }
@@ -87,37 +89,34 @@ const Island = ({
         mouse.y = (fingerPosition?.y / window.innerWidth) * 2 - 1;
         // console.log(mouse)
         hoverSelect();
-        console.log(cam)
+        // console.log(cam)
         // labelRenderer.render(scene, cam);
     }, [fingerPosition]);
 
     function handGrab() {
         if (grab && !isRotating) {
             lastHandX.current = fingerPosition.x;
+            lastY.current = fingerPosition.y;
             setIsRotating(true);
         }
     }
 
     function handDrag() {
         if (isRotating) {
-            const deltaHand =
-                Math.round(fingerPosition.x - lastHandX.current) /
-                viewport.width;
-            smoothDeltaHand.current =
-                0.5 * deltaHand + 0.5 * lastDeltaHand.current;
-            console.log("gonna rotato banana:", smoothDeltaHand.current);
-            if (Math.abs(smoothDeltaHand.current) > 0.1) {
-                islandRef.current.rotation.y +=
-                    smoothDeltaHand.current * 0.01 * Math.PI;
-                // islandRef.current.rotation.y +=
-                //     smoothDeltaHand.current * 0.01 * Math.PI;
-                lastHandX.current = fingerPosition.x;
-                rotationSpeed.current =
-                    smoothDeltaHand.current * 0.01 * Math.PI;
-            }
+            const deltaHand = Math.round(fingerPosition.x - lastHandX.current) * 100 / window.innerWidth;
+            const deltaY = (fingerPosition.y - lastY.current) * 100 / window.innerHeight;
+            smoothDeltaHand.current = 0.8 * deltaHand + 0.2 * lastDeltaHand.current;
+            controlsRef.current?.rotate(smoothDeltaHand.current * -DEG2RAD, deltaY * -DEG2RAD, true)
+            lastY.current = fingerPosition.y;
+    
+            lastHandX.current = fingerPosition.x;
+            rotationSpeed.current = smoothDeltaHand.current * 0.01;
             lastDeltaHand.current = smoothDeltaHand.current;
+            console.log('smooth delta: ', smoothDeltaHand.current)
+            console.log('y delta: ', deltaY)
         }
-    }
+     }
+
 
     function handUp() {
         setIsRotating(false);
@@ -138,100 +137,78 @@ const Island = ({
         }
     }, [grab]);
 
-    const handlePointerDown = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        setIsRotating(true);
+    // const handlePointerDown = (e) => {
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    //     setIsRotating(true);
 
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        lastX.current = clientX;
-    };
-    const handlePointerUp = (e) => {
-        setIsRotating(false);
-        console.log("pointer up!");
-        e.stopPropagation();
-        e.preventDefault();
-    };
-    const handlePointerDrag = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (isRotating) {
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            delta.current = (clientX - lastX.current) / viewport.width;
-            islandRef.current.rotation.y += delta.current * 0.01 * Math.PI;
-            lastX.current = clientX;
-            rotationSpeed.current = delta.current * 0.01 * Math.PI;
-        }
-    };
-    const handleKeyDown = (e) => {
-        if (e.key === "ArrowLeft" || e.key === "A" || e.key === "a") {
-            if (!isRotating) setIsRotating(true);
-            islandRef.current.rotation.y += 0.01 * Math.PI;
-        } else if (e.key === "ArrowRight" || e.key === "D" || e.key === "d") {
-            if (!isRotating) setIsRotating(true);
-            islandRef.current.rotation.y -= 0.01 * Math.PI;
-        }
-    };
-    const handleKeyUp = (e) => {
-        if (
-            e.key === "ArrowLeft" ||
-            e.key === "ArrowRight" ||
-            e.key === "A" ||
-            e.key === "D" ||
-            e.key === "a" ||
-            e.key === "d"
-        ) {
-            setIsRotating(false);
-        }
-    };
+    //     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    //     lastX.current = clientX;
+    // };
+    // const handlePointerUp = (e) => {
+    //     setIsRotating(false);
+    //     console.log("pointer up!");
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    // };
+    // const handlePointerDrag = (e) => {
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    //     if (isRotating) {
+    //         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    //         delta.current = (clientX - lastX.current) / viewport.width;
+    //         islandRef.current.rotation.y += delta.current * 0.01 * Math.PI;
+    //         lastX.current = clientX;
+    //         rotationSpeed.current = delta.current * 0.01 * Math.PI;
+    //     }
+    // };
+    // const handleKeyDown = (e) => {
+    //     if (e.key === "ArrowLeft" || e.key === "A" || e.key === "a") {
+    //         if (!isRotating) setIsRotating(true);
+    //         islandRef.current.rotation.y += 0.01 * Math.PI;
+    //     } else if (e.key === "ArrowRight" || e.key === "D" || e.key === "d") {
+    //         if (!isRotating) setIsRotating(true);
+    //         islandRef.current.rotation.y -= 0.01 * Math.PI;
+    //     }
+    // };
+    // const handleKeyUp = (e) => {
+    //     if (
+    //         e.key === "ArrowLeft" ||
+    //         e.key === "ArrowRight" ||
+    //         e.key === "A" ||
+    //         e.key === "D" ||
+    //         e.key === "a" ||
+    //         e.key === "d"
+    //     ) {
+    //         setIsRotating(false);
+    //     }
+    // };
 
     useFrame(() => {
         if (!isRotating) {
-            rotationSpeed.current *= dampingFactor;
             if (Math.abs(rotationSpeed.current) < 0.001) {
                 rotationSpeed.current = 0;
             }
-            islandRef.current.rotation.y += rotationSpeed.current;
-        } else {
-            const rotation = islandRef.current.rotation.y;
-            const normalizedRotation =
-                ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-
-            // Set the current stage based on the island's orientation
-            switch (true) {
-                case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
-                    setCurrentStage(4);
-                    break;
-                case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
-                    setCurrentStage(3);
-                    break;
-                case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
-                    setCurrentStage(2);
-                    break;
-                case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
-                    setCurrentStage(1);
-                    break;
-                default:
-                    setCurrentStage(null);
-            }
+            controlsRef.current?.rotate(rotationSpeed.current * -DEG2RAD, 0, true)
+            rotationSpeed.current *= 0.98
         }
     });
 
-    useEffect(() => {
-        const canvas = gl.domElement;
-        canvas.addEventListener("pointerdown", handlePointerDown);
-        canvas.addEventListener("pointerup", handlePointerUp);
-        canvas.addEventListener("pointermove", handlePointerDrag);
-        window.addEventListener("keydown", handleKeyDown);
-        window.addEventListener("keyup", handleKeyUp);
-        return () => {
-            canvas.removeEventListener("pointerdown", handlePointerDown);
-            canvas.removeEventListener("pointerup", handlePointerUp);
-            canvas.removeEventListener("pointermove", handlePointerDrag);
-            window.removeEventListener("keydown", handleKeyDown);
-            window.removeEventListener("keyup", handleKeyUp);
-        };
-    }, [gl, handlePointerDown, handlePointerDrag, handlePointerDrag]);
+    // useEffect(() => {
+    //     const canvas = gl.domElement;
+    //     canvas.addEventListener("pointerdown", handlePointerDown);
+    //     canvas.addEventListener("pointerup", handlePointerUp);
+    //     canvas.addEventListener("pointermove", handlePointerDrag);
+    //     window.addEventListener("keydown", handleKeyDown);
+    //     window.addEventListener("keyup", handleKeyUp);
+    //     return () => {
+    //         canvas.removeEventListener("pointerdown", handlePointerDown);
+    //         canvas.removeEventListener("pointerup", handlePointerUp);
+    //         canvas.removeEventListener("pointermove", handlePointerDrag);
+    //         window.removeEventListener("keydown", handleKeyDown);
+    //         window.removeEventListener("keyup", handleKeyUp);
+    //     };
+    // }, [gl, handlePointerDown, handlePointerDrag, handlePointerDrag]);
 
     return (
         <>
