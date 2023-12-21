@@ -17,6 +17,7 @@ import {
 // import islandScene from "../assets/3d/island.glb";
 import { a } from "@react-spring/three";
 import { DEG2RAD } from "three/src/math/MathUtils";
+import './Island.css';
 
 const Island = ({
     controlsRef,
@@ -30,6 +31,7 @@ const Island = ({
     const { nodes, materials } = useGLTF("/3d/island.glb");
     const sky = useGLTF("/3d/sky.glb");
     const skyRef = useRef();
+    const execute = useRef(true)
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const lastY = useRef(0);
@@ -60,14 +62,14 @@ const Island = ({
         initializedRef.current = false;
     }
     //////////////////////////
-    function createPointMesh(name, x, y, z) {
-        const geometry = new THREE.SphereGeometry(1, 16, 8);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00d4ff });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(x, y, z);
-        mesh.name = name;
-        return mesh;
-    }
+    // function createPointMesh(name, x, y, z) {
+    //     const geometry = new THREE.SphereGeometry(1, 16, 8);
+    //     const material = new THREE.MeshBasicMaterial({ color: 0x00d4ff });
+    //     const mesh = new THREE.Mesh(geometry, material);
+    //     mesh.position.set(x, y, z);
+    //     mesh.name = name;
+    //     return mesh;
+    // }
 
     const p = useRef(document.createElement("p"))
     const pLabel = useRef(new CSS2DObject(p.current))
@@ -82,11 +84,11 @@ const Island = ({
     }
 
     useEffect(() => {
-        const group = new THREE.Group();
-        const sphereMesh1 = createPointMesh("sphere1", 10, 40, -20);
-        group.add(sphereMesh1);
-        group.name = "well";
-        scene.add(group);
+        // const group = new THREE.Group();
+        // const sphereMesh1 = createPointMesh("sphere1", 10, 40, -20);
+        // group.add(sphereMesh1);
+        // group.name = "well";
+        // scene.add(group);
         createLabel();
     }, [scene]);
 
@@ -104,20 +106,62 @@ const Island = ({
             console.log("intersecting item: ", intersects[0]?.object);
             if (intersects[0]?.object.name === 'well') {
                     console.log("FOUND THE WELL", intersects.object);
-                    intersects[0]?.object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
-                    p.current.textContent = 'You found the wishing well!'
+                    intersects[0].object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
+                    p.current.innerHTML = '<a id="wish" href="https://youtu.be/fWNaR-rxAic?si=rKgYxas-x67meKZQ&t=4" target="_blank"> You found the wishing well! </a>'
                     p.current.className = 'tooltip show'
                     pLabel.current.position.set(13, -4, -18);
+                    if (grab && execute.current && document.hasFocus()) {
+                        goToLink('wish');
+                        execute.current = false;
+                        setTimeout(() => {
+                            execute.current = true;
+                        }, 5000)
+                    }
             } else if (intersects[0]?.object.name === 'bone') {
-                intersects[0]?.object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
-                p.current.textContent = 'Magic bones!'
+                intersects[0].object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
+                p.current.innerHTML = '<a id="bones" href="https://youtu.be/TO-_3tck2tg?si=TZ7qZWWoji5R_zwL&t=122" target="_blank"> Magic bones! </a>'
                 p.current.className = 'tooltip show'
                 pLabel.current.position.set(22.5, -5, -9.5);
+                if (grab && execute.current && document.hasFocus()) {
+                    goToLink('bones');
+                    execute.current = false;
+                    setTimeout(() => {
+                        execute.current = true;
+                    }, 5000)
+                }
+            } else if (intersects[0]?.object.name === 'tower') {
+                intersects[0].object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
+                p.current.innerHTML = '<a id="rick" href="https://www.youtube.com/watch?v=Yb6dZ1IFlKc" target="_blank">Secret!</a>'
+                p.current.className = 'tooltip show'
+                pLabel.current.position.set(0.2, 21, 0.7);
+                if (grab && execute.current && document.hasFocus()) {
+                    goToLink('rick');
+                    execute.current = false;
+                    setTimeout(() => {
+                        execute.current = true;
+                    }, 5000)
+                }
+            } else if (intersects[0]?.object.name === 'github') {
+                intersects[0].object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
+                p.current.innerHTML = '<a id="github" href="https://github.com/ownerl" target="_blank">Visit my GitHub!</a>'
+                p.current.className = 'tooltip show'
+                pLabel.current.position.set(13.5, 2.5, 3);
+                if (grab && execute.current && document.hasFocus()) {
+                    goToLink('github');
+                    execute.current = false;
+                    setTimeout(() => {
+                        execute.current = true;
+                    }, 5000)
+                }
             } else {
-                p.current.textContent = 'eh'
+                p.current.className = 'tooltip hide'
             }
 
         // });
+    }
+
+    function goToLink(link) {
+        document.getElementById(link).click();
     }
 
     useEffect(() => {
@@ -216,6 +260,18 @@ const Island = ({
                         geometry={go}
                         material={ma}
                         position={[-25.5, 7, -55.3]}
+                    />
+                    <mesh
+                        name="github"
+                        geometry={go}
+                        material={ma}
+                        position={[7, 25, -34]}
+                    />
+                    <mesh
+                        name="tower"
+                        geometry={go}
+                        material={ma}
+                        position={[1.9,70,-0.7]}
                     />
                 </group>
                 <group
