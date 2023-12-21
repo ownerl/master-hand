@@ -37,8 +37,6 @@ const Island = ({
     const lastDeltaHand = useRef(0);
     const rotationSpeed = useRef(0);
     const smoothDeltaHand = useRef(0);
-    const group = useRef(new THREE.Group());
-    const groupRef = useRef(true);
     const labelRef = useRef()
     const scene = useThree(({ scene }) => {
         return scene;
@@ -61,7 +59,7 @@ const Island = ({
 
         initializedRef.current = false;
     }
-
+    //////////////////////////
     function createPointMesh(name, x, y, z) {
         const geometry = new THREE.SphereGeometry(1, 16, 8);
         const material = new THREE.MeshBasicMaterial({ color: 0x00d4ff });
@@ -71,14 +69,16 @@ const Island = ({
         return mesh;
     }
 
+    const p = useRef(document.createElement("p"))
+    const pLabel = useRef(new CSS2DObject(p.current))
+    //////////////////////////
     function createLabel() {
         console.log("created text");
-        const p = document.createElement("p");
-        p.textContent =
-            "Oh how I wish you were here";
-        const pLabel = new CSS2DObject(p);
-        pLabel.position.set(13, -4, -18);
-        scene.add(pLabel);
+        p.current.textContent =
+            "";
+        p.current.className = "tooltip";
+        pLabel.current = new CSS2DObject(p.current);
+        scene.add(pLabel.current);
     }
 
     useEffect(() => {
@@ -99,17 +99,25 @@ const Island = ({
             true
         );
         console.log("the intersects: ", intersects);
-        intersects.forEach((item) => {
-            console.log("intersecting item: ", item.object.name);
-            switch (item.object.name) {
-                case 'well':
-                    console.log("FOUND THE WELL");
-                    break;
-                default:
-                    break;
+        
+        // intersects.forEach((item) => {
+            console.log("intersecting item: ", intersects[0]?.object);
+            if (intersects[0]?.object.name === 'well') {
+                    console.log("FOUND THE WELL", intersects.object);
+                    intersects[0]?.object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
+                    p.current.textContent = 'You found the wishing well!'
+                    p.current.className = 'tooltip show'
+                    pLabel.current.position.set(13, -4, -18);
+            } else if (intersects[0]?.object.name === 'bone') {
+                intersects[0]?.object.material = new THREE.MeshBasicMaterial({ color: 0x00d4ff })
+                p.current.textContent = 'Magic bones!'
+                p.current.className = 'tooltip show'
+                pLabel.current.position.set(22.5, -5, -9.5);
+            } else {
+                p.current.textContent = 'eh'
             }
 
-        });
+        // });
     }
 
     useEffect(() => {
@@ -202,6 +210,12 @@ const Island = ({
                         geometry={go}
                         material={ma}
                         position={[-46.5, 10, -31.3]}
+                    />
+                    <mesh
+                        name="bone"
+                        geometry={go}
+                        material={ma}
+                        position={[-25.5, 7, -55.3]}
                     />
                 </group>
                 <group

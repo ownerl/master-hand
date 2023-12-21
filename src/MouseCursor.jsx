@@ -9,7 +9,7 @@ export default function MouseCursor(props) {
     const variants = {
         default: {
             x: props.fingerPosition?.x,
-            y: props.fingerPosition?.y,
+            y: props.fingerPosition?.y ,
         },
     };
     useEffect(() => {
