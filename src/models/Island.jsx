@@ -9,8 +9,10 @@ import * as THREE from "three";
 import React, { useState, useRef, useEffect } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { Information } from "../components/Information";
+import {
+    CSS2DObject,
+    CSS2DRenderer,
+} from "three/examples/jsm/renderers/CSS2DRenderer";
 
 // import islandScene from "../assets/3d/island.glb";
 import { a } from "@react-spring/three";
@@ -35,53 +37,87 @@ const Island = ({
     const lastDeltaHand = useRef(0);
     const rotationSpeed = useRef(0);
     const smoothDeltaHand = useRef(0);
-    const group = useRef(new THREE.Group())
+    const group = useRef(new THREE.Group());
     const groupRef = useRef(true);
-
+    const labelRef = useRef()
     const scene = useThree(({ scene }) => {
         return scene;
     });
     const cam = useThree(({ camera }) => {
         return camera;
     });
+
+    const initializedRef = useRef(true);
+    if (initializedRef.current) {
+        labelRef.current = new CSS2DRenderer();
+        if (!document.getElementById("label-renderer")) {
+            labelRef.current.setSize(window.innerWidth, window.innerHeight);
+            labelRef.current.domElement.style.position = "absolute";
+            labelRef.current.domElement.style.top = "0px";
+            labelRef.current.domElement.style.pointerEvents = "none";
+            labelRef.current.domElement.id = "label-renderer";
+            document.body.appendChild(labelRef.current.domElement);
+        }
+
+        initializedRef.current = false;
+    }
+
     function createPointMesh(name, x, y, z) {
         const geometry = new THREE.SphereGeometry(1, 16, 8);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00D4FF });
-        const mesh = new THREE.Mesh( geometry, material );
+        const material = new THREE.MeshBasicMaterial({ color: 0x00d4ff });
+        const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(x, y, z);
         mesh.name = name;
-        return mesh
+        return mesh;
+    }
+
+    function createLabel() {
+        console.log("created text");
+        const p = document.createElement("p");
+        p.textContent =
+            "Oh how I wish you were here";
+        const pLabel = new CSS2DObject(p);
+        pLabel.position.set(13, -4, -18);
+        scene.add(pLabel);
     }
 
     useEffect(() => {
         const group = new THREE.Group();
-        const sphereMesh1 = createPointMesh('sphere1', 10, 40, -20);
+        const sphereMesh1 = createPointMesh("sphere1", 10, 40, -20);
         group.add(sphereMesh1);
-        group.name = 'well'
-        scene.add(group)
+        group.name = "well";
+        scene.add(group);
+        createLabel();
     }, [scene]);
 
     // console.log('cam: ', cam)
-    console.log('scene: ', scene.children)
+    console.log("scene: ", scene.children);
     function hoverSelect() {
         raycaster.setFromCamera(mouse, cam);
-        const intersects = raycaster.intersectObjects(scene.children[4].children, true);
+        const intersects = raycaster.intersectObjects(
+            scene.children[4].children,
+            true
+        );
         console.log("the intersects: ", intersects);
-        intersects.forEach ((item) => {
+        intersects.forEach((item) => {
             console.log("intersecting item: ", item.object.name);
-            if (item.object.name === "well") {
-                console.log("FOUND THE WELL");
+            switch (item.object.name) {
+                case 'well':
+                    console.log("FOUND THE WELL");
+                    break;
+                default:
+                    break;
             }
 
-        })
+        });
     }
 
     useEffect(() => {
         mouse.x = (fingerPosition?.x / window.innerWidth) * 2 - 1;
         mouse.y = -(fingerPosition?.y / window.innerHeight) * 2 + 1;
-        console.log(mouse)
+        console.log(mouse);
         hoverSelect();
-        // labelRenderer.render(scene, cam);
+        // labelRef.current.render(scene, cam);
     }, [fingerPosition]);
 
     function handGrab() {
@@ -147,28 +183,26 @@ const Island = ({
             );
             rotationSpeed.current *= 0.98;
         }
+        labelRef.current.render(scene, cam)
+
     });
 
-    const go = new THREE.SphereGeometry(2, 16, 8)
-    const ma = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    const go = new THREE.SphereGeometry(2, 16, 8);
+    const ma = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     return (
         <>
-            {/* <Information /> */}
             <gridHelper
                 args={[50, 50, 0xff0000, "teal"]}
                 position={[0, -7, 0]}
             />
             <a.group ref={islandRef} {...props}>
-                <group
-                    position={[0,0,0]}
-                    rotation={[0,0,0]}
-                >
-                    <mesh  
-                            name="well"
-                            geometry={go}
-                            material={ma}
-                            position={[-46.5, 10, -31.3]}
-                        />
+                <group position={[0, 0, 0]} rotation={[0, 0, 0]}>
+                    <mesh
+                        name="well"
+                        geometry={go}
+                        material={ma}
+                        position={[-46.5, 10, -31.3]}
+                    />
                 </group>
                 <group
                     position={[-36.773, 6.538, 16.547]}
@@ -503,7 +537,7 @@ const Island = ({
                     />
                 </group>
                 //////////////////////////////////////////////////////////////////
-                <group
+                {/* <group
                     position={[29.339, 16.048, -89.902]}
                     rotation={[0, -0.086, 0]}
                 >
@@ -537,7 +571,7 @@ const Island = ({
                         rotation={[0, 0.638, 0]}
                         name={'shrine'}
                     />
-                </group>
+                </group> */}
                 //////////
                 <group position={[-14.879, -3.715, 61.952]}>
                     <mesh

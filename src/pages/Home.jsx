@@ -5,32 +5,10 @@ import Island from "../models/Island";
 import Sky from "../models/Sky";
 import * as THREE from "three";
 import { CameraControls } from "@react-three/drei";
-import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { GridHelper } from "three";
-import { useThree } from "@react-three/fiber/dist/react-three-fiber.cjs";
 export default function Home(props) {
     const [isRotating, setIsRotating] = useState(false);
     const [handRefState, setHandRefState] = useState(props.fp);
-    // const handyRef = useRef(props.fingerPosition.current)
-    const initializedRef = useRef(false);
     const controlsRef = useRef();
-    useEffect(() => {
-        if (!initializedRef.current) {
-            // const labelRenderer = new CSS2DRenderer();
-            // if (!document.getElementById("label-renderer")) {
-            //     labelRenderer.setSize(
-            //         window.innerWidth / 8,
-            //         window.innerHeight / 2
-            //     );
-            //     labelRenderer.domElement.style.position = "absolute";
-            //     labelRenderer.domElement.style.top = "0px";
-            //     labelRenderer.domElement.style.pointerEvents = "none";
-            //     labelRenderer.domElement.id = "label-renderer";
-            //     document.body.appendChild(labelRenderer.domElement);
-            // }
-            initializedRef.current = true;
-        }
-    }, [initializedRef.current]);
 
     const adjustIslandForScreenSize = () => {
         let screenScale = null;
@@ -80,7 +58,7 @@ export default function Home(props) {
                     <CameraControls
                         ref={controlsRef}
                         distance={50}
-                        minDistance={44}
+                        // minDistance={44}
                         maxDistance={150}
                         enablePan={false}
                         minPolarAngle={0}
