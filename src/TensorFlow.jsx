@@ -91,18 +91,13 @@ export default function TFApp(props) {
     }, [props.grabRef.current])
 
     const updateFingerPosition = (handCoords) => {
-        // console.log("Updating finger position to: ", handCoords);
         const mirroredX = webcamRef.current.video.videoWidth - handCoords.x;
         const newWidth =
             (window.innerWidth / webcamRef.current.video.clientWidth) *
             mirroredX;
-        // console.log("window inner width ", window.innerWidth);
-        // console.log("webcam ref vid: ", webcamRef.current.video.clientHeight);
-        // console.log("update fingers inside: handCoords.x: ", newWidth);
         const newHeight =
             (window.innerHeight / webcamRef.current.video.clientHeight) *
             handCoords.y;
-        // console.log('finger position prop',props.fingerPosition.current)
         props.setfp({ x: newWidth, y: newHeight })
         props.fingerPosition.current = { x: newWidth, y: newHeight }
         setFingerPosition({ x: newWidth, y: newHeight });
@@ -123,7 +118,6 @@ export default function TFApp(props) {
 
     return (
         <div className="Tensor-flow">
-            {/* <Ball fingerPosition={fingerPosition} grabRef={props.grabRef} /> */}
             <MouseCursor
                 fingerPosition={fingerPosition}
                 grabRef={props.grabRef}
