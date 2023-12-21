@@ -6,7 +6,7 @@ const Sky = ({ isRotating, delta, smoothDeltaHand, grab }) => {
     const sky = useGLTF("/3d/sky.glb");
     const skyRef = useRef();
     const defDelta = delta
-    useFrame((_, delta) => {
+    useFrame((_,) => {
         if (isRotating) {
             if (grab) {
                 skyRef.current.rotation.y += 0.1 * smoothDeltaHand

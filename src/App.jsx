@@ -1,7 +1,6 @@
 import "./App.css";
 import TFApp from "./TensorFlow";
 import { useRef, useState } from "react";
-import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages";
 
 function App() {

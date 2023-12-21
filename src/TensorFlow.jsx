@@ -1,15 +1,10 @@
 import * as tf from "@tensorflow/tfjs-core";
 import * as handPostDetection from "@tensorflow-models/hand-pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
-
-import "./TensorFlow.css";
 import React from "react";
 import Webcam from "react-webcam";
 import { useRef, useState, useEffect } from "react";
 import MouseCursor from "./MouseCursor";
-import Ball from "./Ball";
-
-// import * as scatter from "scatter-gl";
 
 export default function TFApp(props) {
     const webcamRef = useRef(null);
@@ -31,7 +26,6 @@ export default function TFApp(props) {
             detectorConfig
         );
         const render = async () => {
-            // console.log('grab ref', props.grabRef)
             await detect(handDetector);
             requestAnimationFrame(render);
         };
@@ -46,19 +40,15 @@ export default function TFApp(props) {
         ) {
             // video properties
             const video = webcamRef.current.video;
-            // const videoWidth = webcamRef.current.video.videoWidth;
-            // const videoHeight = webcamRef.current.video.videoHeight;
             const image = tf.browser.fromPixels(video);
             const hands = await handDetector.estimateHands(image);
             if (
                 hands[0]?.keypoints &&
                 typeof props.grabRef?.current != "undefined"
             ) {
-                console.log("inside of if");
                 const keypoint = hands[0].keypoints;
                 try {
                     const handCoords = keypoint[9]; // keypoint 9 is the base of the ring finger
-                    // console.log("finger coors: ", fingerPosition);
                     updateFingerPosition(handCoords);
                 } catch (error) {
                     console.error("Error drawing hand:", error);
@@ -85,9 +75,7 @@ export default function TFApp(props) {
             clench_fingers.y < palm_center.y + 40 &&
             clench_fingers.y > palm_center.y - 40
         ) {
-            //console.log("GET GRABBED LOL");
             props.grabRef.current = true;
-            // create grab/click function
         } else {
             props.grabRef.current = false;
         }
@@ -95,10 +83,8 @@ export default function TFApp(props) {
 
     useEffect(() => {
         if (props.grabRef.current) {
-            console.log('clik down')
             document.body.dispatchEvent(clickDown);
         } else if (!props.grabRef.current) {
-            console.log('click up')
             document.body.dispatchEvent(clickUp)
 
         }

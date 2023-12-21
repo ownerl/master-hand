@@ -53,8 +53,8 @@ export default function Home(props) {
                     />
                     <CameraControls
                         ref={controlsRef}
-                        distance={50}
-                        // minDistance={44}
+                        distance={45}
+                        minDistance={24}
                         maxDistance={150}
                         enablePan={false}
                         minPolarAngle={0}
