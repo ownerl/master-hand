@@ -51,3 +51,9 @@ Create a web-app that utilizes MediaPipe's pose tracking system to control and n
 ## Wireframes
 
 ![literally wireframe](<public/Screenshot 2023-12-13 at 1.00.13 PM.png>)
+
+## Credits
+
+- Thanks to Murtaza's Workshop for teaching computer vision basics
+- Thanks to JavaScript Mastery for teaching Three.js basics
+- Credit to Omar Faruq Tawsif (https://sketchfab.com/omarfaruqtawsif32) for the 3D model of Island
