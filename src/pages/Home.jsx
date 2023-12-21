@@ -6,7 +6,8 @@ import Sky from "../models/Sky";
 import * as THREE from "three";
 import { CameraControls } from "@react-three/drei";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
-
+import { GridHelper } from "three";
+import { useThree } from "@react-three/fiber/dist/react-three-fiber.cjs";
 export default function Home(props) {
     const [isRotating, setIsRotating] = useState(false);
     const [handRefState, setHandRefState] = useState(props.fp);
@@ -44,6 +45,7 @@ export default function Home(props) {
         return [screenScale, screenPosition, rotation];
     };
 
+
     useEffect(() => {
         setHandRefState(props.fp);
     }, [props.fp]);
@@ -52,9 +54,6 @@ export default function Home(props) {
 
     return (
         <section className="w-full h-screen relative">
-            {/* <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center text-gray-200'>
-                POPO JOJO
-            </div> */}
             <Canvas
                 className={`w-full h-screen bg-transparent ${
                     isRotating ? "cursor-grabbing" : "cursor-grab"
@@ -80,7 +79,7 @@ export default function Home(props) {
                     />
                     <CameraControls
                         ref={controlsRef}
-                        distance={44}
+                        distance={50}
                         minDistance={44}
                         maxDistance={150}
                         enablePan={false}
@@ -88,14 +87,6 @@ export default function Home(props) {
                         maxPolarAngle={Math.PI / 2}
                         smoothTime={0.125}
                     />
-                    {/* <OrbitControls 
-                        ref={controlsRef}
-                        enablePan={false}
-                        minPolarAngle={0}
-                        maxPolarAngle={Math.PI / 2}
-                        minDistance={44}
-                        maxDistance={150}
-                    /> */}
                 </Suspense>
             </Canvas>
         </section>

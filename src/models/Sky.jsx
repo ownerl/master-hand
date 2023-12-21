@@ -15,6 +15,7 @@ const Sky = ({ isRotating, delta, smoothDeltaHand, grab }) => {
             }
         }
     })
+    
     return (
         <mesh ref={skyRef}>
             <primitive object={sky.scene} />

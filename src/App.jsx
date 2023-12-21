@@ -12,7 +12,7 @@ function App() {
     const [fp, setfp] = useState(handRef.current)
     return (
         <main>
-            <Navbar />
+            {/* <Navbar /> */}
             <TFApp setfp={setfp} fingerPosition={handRef} grabRef={grabRef} />
             <Home fp={fp} grab={grabRef} />
             <Routes>
