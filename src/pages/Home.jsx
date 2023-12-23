@@ -49,7 +49,9 @@ export default function Home(props) {
                         setIsRotating={setIsRotating}
                         fingerPosition={handRefState}
                         grab={props.grab.current}
+                        zoom={props.zoom.current}
                         controlsRef={controlsRef}
+                        zoomDistanceRef={props.zoomDistanceRef.current}
                     />
                     <CameraControls
                         ref={controlsRef}

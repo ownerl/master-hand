@@ -22,8 +22,10 @@ import { DEG2RAD } from "three/src/math/MathUtils";
 import './Island.css';
 
 const Island = ({
+    zoomDistanceRef,
     controlsRef,
     grab,
+    zoom,
     fingerPosition,
     isRotating,
     setIsRotating,
@@ -187,9 +189,19 @@ const Island = ({
         }
     }
 
+    function zooming() {
+        controlsRef.current.dolly(zoom * -2, true);
+    }
+
     function handUp() {
         setIsRotating(false);
     }
+
+    useEffect(() => {
+        if (grab) {
+            zooming();
+        }
+    }, [zoomDistanceRef])
 
     useEffect(() => {
         if (grab && isRotating) {

@@ -54,6 +54,7 @@ export default function TFApp(props) {
                     console.error("Error drawing hand:", error);
                 }
                 checkGrab(keypoint);
+                checkZoom(keypoint);
             }
 
             tf.dispose(image);
@@ -81,12 +82,23 @@ export default function TFApp(props) {
         }
     };
 
+    const checkZoom = (keypoint) => {
+        const newZoomDistance = keypoint[0].y - keypoint[9].y
+        const zoomDelta = newZoomDistance - props.zoomDistanceRef.current;
+        if (zoomDelta > 0) {
+            props.zoomRef.current = 1;
+        }
+        if (zoomDelta < 0) {
+            props.zoomRef.current = -1;
+        }
+        props.zoomDistanceRef.current = newZoomDistance;
+    }
+
     useEffect(() => {
         if (props.grabRef.current) {
             document.body.dispatchEvent(clickDown);
         } else if (!props.grabRef.current) {
             document.body.dispatchEvent(clickUp)
-
         }
     }, [props.grabRef.current])
 
