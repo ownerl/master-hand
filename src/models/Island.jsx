@@ -190,18 +190,18 @@ const Island = ({
     }
 
     function zooming() {
-        controlsRef.current.dolly(zoom * -2, true);
+        controlsRef.current.dolly(zoom * -1, true);
     }
 
     function handUp() {
         setIsRotating(false);
     }
 
-    useEffect(() => {
-        if (grab) {
-            zooming();
-        }
-    }, [zoomDistanceRef])
+    // useEffect(() => {
+    //     if (grab) {
+    //         zooming();
+    //     }
+    // }, [zoomDistanceRef])
 
     useEffect(() => {
         if (grab && isRotating) {
